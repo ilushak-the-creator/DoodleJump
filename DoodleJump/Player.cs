@@ -24,7 +24,7 @@ public class Player : ICreature
 
     public void DrawSprite(Graphics g)
     {
-        g.DrawImage(sprite, Transform.Position.X, Transform.Position.Y, Transform.Size.Width, Transform.Size.Height);
+        g.DrawImage(sprite, GetPositionX(), GetPositionY(), Transform.Size.Width, Transform.Size.Height);
     }
 
 }

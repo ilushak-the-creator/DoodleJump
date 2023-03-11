@@ -5,8 +5,12 @@
         public float dx;
         private float gravity;
         private float acceleration = 0.4f;
+        private List<Platform> platforms;
 
-
+        public Engine(List<Platform> platforms)
+        {
+            this.platforms = platforms;
+        }
 
         public void CalculatePhysics(ICreature player)
         {
@@ -18,22 +22,21 @@
             {
                 player.Transform.Position.Y += gravity;
                 gravity += acceleration;
-
                 Collide(player);
             }
         }
 
         public void Collide(ICreature player)
         {
-            for (var i = 0; i < Game.Platforms.Count; i++)
+            for (var i = 0; i < platforms.Count; i++)
             {
-                var platform = Game.Platforms[i];
+                var platform = platforms[i];
                 if (IsPlayerTouchedPlatform(player, platform) && gravity > 0)
                 {
                     gravity = -10;
                     if (!platform.IsTouchedByPlayer)
                     {
-                        Game.Score += 20;
+                        Game.AddScore(20);
                         platform.IsTouchedByPlayer = true;
                         Game.GenerateRandomPlatform();
                         Game.ClearPlatforms();
@@ -42,7 +45,7 @@
             }
         }
 
-        private bool IsPlayerTouchedPlatform(ICreature player, Platform platform) =>
+        private static bool IsPlayerTouchedPlatform(ICreature player, Platform platform) =>
             (platform.GetPositionX() <= player.GetWidth()
                 && player.GetWidth() <= platform.GetWidth()
                 && platform.GetPositionY() <= player.GetHeight()

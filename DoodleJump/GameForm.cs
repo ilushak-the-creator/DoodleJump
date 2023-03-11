@@ -2,10 +2,7 @@ namespace DoodleJump;
 
 public partial class GameForm : Form
 {
-    public Player player;
     public System.Windows.Forms.Timer timer;
-    public Engine engine;
-
 
     public GameForm()
     {
@@ -25,78 +22,50 @@ public partial class GameForm : Form
 
     public void Init()
     {
-        Game.AddPlatform(new(100, 400));
-        Game.Score = 0;
-        Game.StartPlatformPosY = 400;
-        
-        Game.GenerateStartSequence();
-        player = new Player();
-        engine = new Engine();
+        Game.RestartGame();
     }
 
-    private void OnKeyboardUp(object sender, KeyEventArgs e)
+    private void OnKeyboardUp(object? sender, KeyEventArgs e)
     {
-        engine.dx = 0;
+        Game.DontMove();
     }
 
-    private void OnKeyboardPressed(object sender, KeyEventArgs e)
+    private void OnKeyboardPressed(object? sender, KeyEventArgs e)
     {
-        if (e.KeyCode == Keys.D || e.KeyCode == Keys.Right) 
+        if (e.KeyCode == Keys.D || e.KeyCode == Keys.Right)
         {
-            engine.dx = 6;
+            Game.MoveRight();
         }
-        if (e.KeyCode == Keys.A || e.KeyCode == Keys.Left) 
+        if (e.KeyCode == Keys.A || e.KeyCode == Keys.Left)
         {
-            engine.dx = -6;
+            Game.MoveLeft();
         }
     }
 
-    private void Update(object sender, EventArgs e)
+    private void Update(object? sender, EventArgs e)
     {
-        Text = "Score - " + Game.Score;
+        Text = "Score - " + Game.GetScore();
 
-        if (player.GetPositionY() >= Game.Platforms.First().GetPositionY() + 200)
+        if (Game.IsEnd())
         {
-            Game.Platforms.Clear();
             Init();
-
         }
-        engine.CalculatePhysics(player);
-        FollowPlayer();
-
-
+        Game.Update();
         Invalidate();
     }
-     
-    public void FollowPlayer()
-    {
-        int offset = 400 - (int)player.GetPositionY();
-        player.Transform.Position.Y += offset;
 
-        foreach(var platform in Game.Platforms)
-        {
-            platform.Transform.Position.Y += offset;
-        }
 
-    }
 
-    private void OnRepaint(object sender, PaintEventArgs e)
+    private void OnRepaint(object? sender, PaintEventArgs e)
     {
         var g = e.Graphics;
 
-        if (Game.Platforms.Count > 0)
-        {
-            foreach(var platform in Game.Platforms)
-            {
-                platform.DrawSprite(g);
-            }
-        }
-        player.DrawSprite(g);
+        Game.DrawPlatforms(g);
+        Game.DrawPlayer(g);
     }
 
-    private void OnLoad(object sender, EventArgs e)
+    private void OnLoad(object? sender, EventArgs e)
     {
         DoubleBuffered = true;
-
     }
 }
