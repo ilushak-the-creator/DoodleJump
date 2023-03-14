@@ -13,8 +13,8 @@ namespace DoodleJump
 
         public Transform(PointF position, Size size)
         {
-            this.Position = position;
-            this.Size = size;
+            Position = position;
+            Size = size;
         }
 
         public float GetWidth() => Position.X + Size.Width;

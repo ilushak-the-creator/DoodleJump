@@ -113,6 +113,16 @@ namespace DoodleJump {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap man_reverse {
+            get {
+                object obj = ResourceManager.GetObject("man_reverse", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap man_shooting {
             get {
                 object obj = ResourceManager.GetObject("man_shooting", resourceCulture);

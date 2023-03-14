@@ -21,14 +21,14 @@ public class Platform : IPlatform
         IsTouchedByPlayer = false;
     }
 
-    public float GetPositionX() => Transform.Position.X;
-    public float GetPositionY() => Transform.Position.Y;
-    public float GetWidth() => Transform.GetWidth();
-    public float GetHeight() => Transform.GetHeight();
-
     public void DrawSprite(Graphics g)
     {
-        g.DrawImage(sprite, Transform.Position.X, Transform.Position.Y, Transform.Size.Width, Transform.Size.Height);
+        g.DrawImage(
+            sprite,
+            Transform.Position.X,
+            Transform.Position.Y,
+            Transform.Size.Width,
+            Transform.Size.Height);
     }
 
 }

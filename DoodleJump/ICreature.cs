@@ -9,10 +9,8 @@ namespace DoodleJump
     public interface ICreature
     {
         public Transform Transform { get; }
+        public int Dx { get; }
 
-        public float GetPositionX() => Transform.Position.X;
-        public float GetPositionY() => Transform.Position.Y;
-        public float GetWidth();
-        public float GetHeight();
+        public void DrawSprite(Graphics g);
     }
 }

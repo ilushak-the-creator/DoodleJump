@@ -11,10 +11,9 @@ public static class Game
     private static int score = 0;
 
     private static int startPlatformPosY = 400;
-    private static readonly Platform startPlatform = new(new PointF(100, 400));
-    private static List<Platform> platforms = new List<Platform>();
+    private static List<Platform> platforms = new();
 
-    private static Engine engine = new Engine(platforms);
+    private static Physics physics = new Physics();
     private static Player player = new Player();
 
     public static void AddScore(int size) => score += size;
@@ -25,25 +24,26 @@ public static class Game
     {
         ResetScore();
         platforms.Clear();
-        platforms.Add(new(new PointF(100, 400)));
         startPlatformPosY = 400;
         GenerateStartSequence();
-        engine = new Engine(platforms);
+        physics = new Physics();
         player = new Player();
     }
 
-    public static bool IsEnd() => player.GetPositionY() >= platforms[0].GetPositionY() + 200;
+    public static bool IsEnd() => player.Transform.Position.Y >= platforms.First().Transform.Position.Y + 200;
 
     public static void Update()
     {
-        engine.CalculatePhysics(player);
+        physics.CalculatePhysics(player, platforms);
         FollowPlayer();
+        MovePlayerThrowWalls();
     }
 
     public static void AddPlatform(PointF position) => platforms.Add(new Platform(position));
 
     public static void GenerateStartSequence()
     {
+        platforms.Add(new(new PointF(100, 400)));
         Random r = new Random();
         for (int i = 0; i < 10; i++)
         {
@@ -56,6 +56,14 @@ public static class Game
         }
     }
 
+    public static void GenerateRandomPlatform()
+    {
+        Random r = new Random();
+        int x = r.Next(0, 270);
+        PointF position = new PointF(x, startPlatformPosY);
+        Platform platform = new Platform(position);
+        platforms.Add(platform);
+    }
     public static void DrawPlatforms(Graphics g)
     {
         foreach (var platform in platforms)
@@ -66,38 +74,42 @@ public static class Game
 
     public static void DrawPlayer(Graphics g) => player.DrawSprite(g);
 
-    public static void DontMove() => engine.dx = 0;
-    public static void MoveLeft() => engine.dx = -6;
-    public static void MoveRight() => engine.dx = 6;
-
-    public static void GenerateRandomPlatform()
-    {
-        Random r = new Random();
-        int x = r.Next(0, 270);
-        PointF position = new PointF(x, startPlatformPosY);
-        Platform platform = new Platform(position);
-        platforms.Add(platform);
-    }
+    public static void DontMove() => player.DontMove();
+    public static void MoveLeft() => player.MoveLeft();
+    public static void MoveRight() => player.MoveRight();
 
     public static void ClearPlatforms()
     {
         for (int i = 0; i < platforms.Count; i++)
         {
             if (platforms[i].Transform.Position.Y >= 700)
+            {
                 platforms.RemoveAt(i);
+            }
         }
     }
 
     private static void FollowPlayer()
     {
-        int offset = 400 - (int)player.GetPositionY();
+        var offset = 400 - (int)player.Transform.Position.Y;
         player.Transform.Position.Y += offset;
 
         foreach (var platform in platforms)
         {
             platform.Transform.Position.Y += offset;
         }
+    }
 
+    private static void MovePlayerThrowWalls()
+    {
+        if (player.Transform.Position.X < -20)
+        {
+            player.Transform.Position.X = 300;
+        }
+        if (player.Transform.Position.X > 300)
+        {
+            player.Transform.Position.X = -20;
+        }
     }
 
 }
