@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace DoodleJump;
 
-public class Player : ICreature
+public class Player : ITouchable
 {
     public Transform Transform { get; set; }
     public int Dx { get; private set; }
+    public bool IsTouchedByPlayer { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
     private Image sprite;
 
     public Player()
@@ -31,12 +33,17 @@ public class Player : ICreature
         Dx = 6;
     }
 
+    public void Shoot()
+    {
+        sprite = Resource1.man_shooting;
+    }
+
+    public void Move() => Transform.Position.X += Dx;
+
     public void DrawSprite(Graphics g) =>
         g.DrawImage(sprite, 
             Transform.Position.X, 
             Transform.Position.Y, 
             Transform.Size.Width, 
             Transform.Size.Height);
-
-
 }

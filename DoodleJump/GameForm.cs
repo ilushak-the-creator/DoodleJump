@@ -22,23 +22,27 @@ public partial class GameForm : Form
 
     public void Init()
     {
-        Game.RestartGame();
+        Game.Restart();
     }
 
     private void OnKeyboardUp(object? sender, KeyEventArgs e)
     {
-        Game.DontMove();
+        Game.PlayerDontMove();
     }
 
     private void OnKeyboardPressed(object? sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.D || e.KeyCode == Keys.Right)
         {
-            Game.MoveRight();
+            Game.MovePlayerRight();
         }
         if (e.KeyCode == Keys.A || e.KeyCode == Keys.Left)
         {
-            Game.MoveLeft();
+            Game.MovePlayerLeft();
+        }
+        if (e.KeyCode == Keys.Space)
+        {
+            Game.PlayerShoot();
         }
     }
 
@@ -60,8 +64,7 @@ public partial class GameForm : Form
     {
         var g = e.Graphics;
 
-        Game.DrawPlatforms(g);
-        Game.DrawPlayer(g);
+        Game.DrawGraphics(g);
     }
 
     private void OnLoad(object? sender, EventArgs e)
