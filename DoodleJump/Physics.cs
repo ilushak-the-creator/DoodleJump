@@ -49,11 +49,11 @@
                             Game.Restart();
                         break;
                     }
-                    if (item.GetType() == typeof(Buster))
-                    {
-                        gravity = -20;
-                        Game.AddScore(20);
-                    }
+                    //if (item.GetType() == typeof(Buster))
+                    //{
+                    //    gravity = -20;
+                    //    Game.AddScore(20);
+                    //}
                 }
             }
         }
