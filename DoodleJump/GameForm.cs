@@ -2,11 +2,14 @@ namespace DoodleJump;
 
 public partial class GameForm : Form
 {
+    private readonly GameManager game;
     public System.Windows.Forms.Timer timer;
 
-    public GameForm()
+    public GameForm(GameManager game)
     {
-        Init();
+        this.game = game;
+
+        game.Restart();
         InitializeComponent();
         timer = new System.Windows.Forms.Timer();
         timer.Interval = 15;
@@ -20,37 +23,37 @@ public partial class GameForm : Form
         Paint += new PaintEventHandler(OnRepaint);
     }
 
-    public void Init()
-    {
-        Game.RestartGame();
-    }
 
     private void OnKeyboardUp(object? sender, KeyEventArgs e)
     {
-        Game.DontMove();
+        game.PlayerDontMove();
     }
 
     private void OnKeyboardPressed(object? sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.D || e.KeyCode == Keys.Right)
         {
-            Game.MoveRight();
+            game.MovePlayerRight();
         }
         if (e.KeyCode == Keys.A || e.KeyCode == Keys.Left)
         {
-            Game.MoveLeft();
+            game.MovePlayerLeft();
+        }
+        if (e.KeyCode == Keys.Space)
+        {
+            game.PlayerShoot();
         }
     }
 
     private void Update(object? sender, EventArgs e)
     {
-        Text = "Score - " + Game.GetScore();
+        Text = "Score - " + game.Score + " | Max Score: " + game.MaxScore;
 
-        if (Game.IsEnd())
+        if (game.IsEnd())
         {
-            Init();
+            game.Restart();
         }
-        Game.Update();
+        game.Update();
         Invalidate();
     }
 
@@ -60,8 +63,7 @@ public partial class GameForm : Form
     {
         var g = e.Graphics;
 
-        Game.DrawPlatforms(g);
-        Game.DrawPlayer(g);
+        game.DrawGraphics(g);
     }
 
     private void OnLoad(object? sender, EventArgs e)

@@ -1,52 +1,73 @@
-﻿namespace DoodleJump
+﻿using DoodleJump.Interfaces;
+using DoodleJump.Models;
+using DoodleJump.Models.Monsters;
+using DoodleJump.Models.Busters;
+
+namespace DoodleJump
 {
     public class Physics
     {
         private float gravity;
         private const float acceleration = 0.4f;
 
-
-        public void CalculatePhysics(ICreature player, List<Platform> platforms)
+        public void CalculatePhysics(Player player, IEnumerable <IEnumerable<IInteractable>> interactables)
         {
             if (player.Dx != 0)
             {
-                player.Transform.Position.X += player.Dx;
+                player.Move();
             }
-            if (player.Transform.Position.Y < 700)
+            if (player.InteractionModel.Position.Y < 700)
             {
-                player.Transform.Position.Y += gravity;
+                player.InteractionModel.Position.Y += gravity;
                 gravity += acceleration;
-                Collide(player, platforms);
-            }
-        }
 
-        public void Collide(ICreature player, List<Platform> platforms)
-        {
-            for (var i = 0; i < platforms.Count; i++)
-            {
-                var platform = platforms[i];
-                if (IsPlayerTouchedPlatform(player, platform) && gravity > 0)
+                if (gravity >= -10)
+                foreach (var item in interactables)
                 {
-                    gravity = -10;
-
-                    if (!platform.IsTouchedByPlayer)
-                    {
-                        Game.AddScore(20);
-                        platform.IsTouchedByPlayer = true;
-                        Game.GenerateRandomPlatform();
-                        Game.ClearPlatforms();
-                    }
+                    Collision(player, item);
                 }
             }
         }
 
-        private static bool IsPlayerTouchedPlatform(ICreature player, Platform platform) =>
-            (player.Transform.Position.X >= platform.Transform.Position.X - 30
-                && player.Transform.Position.X <= platform.Transform.Position.X + 30
-                &&  player.Transform.GetHeight() >= platform.Transform.Position.Y 
-                && player.Transform.GetHeight() <= platform.Transform.GetHeight());
-
-
-
+        private void Collision(Player player, IEnumerable<IInteractable> items)
+        {
+            foreach (var item in items)
+            {
+                if (player.InteractionModel.IsCollideWith(item))
+                {
+                    if (item is Platform && gravity > 0)
+                    {
+                        gravity = -10;
+                        item.IsTouchedByPlayer = true;
+                        break;
+                    }
+                    if (item is Monster)
+                    {
+                        if (gravity > 0)
+                        {
+                            gravity = -10;
+                            item.IsTouchedByPlayer = true;
+                            break;
+                        }
+                        else
+                        {
+                            player.IsAlive = false;
+                        }
+                    }
+                    if (item is Buster)
+                    {
+                        if (item is BusterRocket)
+                        {
+                            player.RocketBoost();
+                            gravity = -40;
+                        }
+                        if (item is BusterSpring)
+                            gravity = -20;
+                        item.IsTouchedByPlayer = true; 
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
