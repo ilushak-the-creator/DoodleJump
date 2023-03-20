@@ -1,59 +1,71 @@
-﻿namespace DoodleJump
+﻿using DoodleJump.Interfaces;
+using DoodleJump.Models;
+using DoodleJump.Models.Monsters;
+using DoodleJump.Models.Busters;
+
+namespace DoodleJump
 {
     public class Physics
     {
         private float gravity;
         private const float acceleration = 0.4f;
 
-
-        public void CalculatePhysics(Player player, IEnumerable<ITouchable> platforms, IEnumerable<ITouchable> things)
+        public void CalculatePhysics(Player player, IEnumerable <IEnumerable<IInteractable>> interactables)
         {
             if (player.Dx != 0)
             {
                 player.Move();
             }
-            if (player.Transform.Position.Y < 700)
+            if (player.InteractionModel.Position.Y < 700)
             {
-                player.Transform.Position.Y += gravity;
+                player.InteractionModel.Position.Y += gravity;
                 gravity += acceleration;
-                Collide(player, platforms);
-                Collide(player, things);
+
+                if (gravity >= -10)
+                foreach (var item in interactables)
+                {
+                    Collision(player, item);
+                }
             }
         }
 
-        private void Collide(Player player, IEnumerable<ITouchable> items)
+        private void Collision(Player player, IEnumerable<IInteractable> items)
         {
             foreach (var item in items)
             {
-                if (player.Transform.IsCollideWith(item))
+                if (player.InteractionModel.IsCollideWith(item))
                 {
-                    if (gravity > 0 && item.GetType() == typeof(Platform))
+                    if (item is Platform && gravity > 0)
                     {
                         gravity = -10;
-
-                        if (!item.IsTouchedByPlayer)
-                        {
-                            Game.AddScore(20);
-                            item.IsTouchedByPlayer = true;
-                        }
+                        item.IsTouchedByPlayer = true;
+                        break;
                     }
-                    if (item.GetType() == typeof(Monster))
+                    if (item is Monster)
                     {
                         if (gravity > 0)
                         {
                             gravity = -10;
-                            Game.KillMonster((Monster)item);
-                            Game.AddScore(50);
+                            item.IsTouchedByPlayer = true;
+                            break;
                         }
                         else
-                            Game.Restart();
+                        {
+                            player.IsAlive = false;
+                        }
+                    }
+                    if (item is Buster)
+                    {
+                        if (item is BusterRocket)
+                        {
+                            player.RocketBoost();
+                            gravity = -40;
+                        }
+                        if (item is BusterSpring)
+                            gravity = -20;
+                        item.IsTouchedByPlayer = true; 
                         break;
                     }
-                    //if (item.GetType() == typeof(Buster))
-                    //{
-                    //    gravity = -20;
-                    //    Game.AddScore(20);
-                    //}
                 }
             }
         }

@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace DoodleJump
 {
-    public interface IPlatform
+    public class ConfigFile
     {
+        //public const (Size, Image)[] MonsterSettings =
+        //{
+        //    {n }
+        //}
     }
 }
