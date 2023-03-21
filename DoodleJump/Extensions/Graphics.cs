@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.Xml;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using DoodleJump.Interfaces;
+﻿using DoodleJump.Interfaces;
 using DoodleJump.Models;
-using DoodleJump.Models.Monsters;
 
 namespace DoodleJump.Extensions
 {

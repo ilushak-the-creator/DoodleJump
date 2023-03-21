@@ -36,7 +36,7 @@ public class GameManager
         Score = 0;
         platforms.Clear();
         interactables.Clear();
-        GenerateStartSequence();
+        GenerateStartSequencePlatforms();
         physics = new Physics();
         player = new Player();
     }
@@ -52,6 +52,18 @@ public class GameManager
         ClearPlatforms();
         ClearInteractables();
         
+    }
+    public void PlayerShoot()
+    {
+        player.Shoot();
+        foreach (var item in interactables)
+        {
+            if (item.InteractionModel.Position.Y > 0 && item is Monster)
+            {
+                interactables.Remove(item);
+                break;
+            }
+        }
     }
 
     public void DrawGraphics(Graphics g)
@@ -71,7 +83,7 @@ public class GameManager
     public void MovePlayerLeft() => player.SetDirectionLeft();
     public void MovePlayerRight() => player.SetDirectionRight();
 
-    private void GenerateStartSequence()
+    private void GenerateStartSequencePlatforms()
     {
         platforms.Enqueue(new(new PointF(startPlatformPositionX, startPlatformPosY)));
         for (int i = 0; i < 15; i++)
@@ -124,6 +136,8 @@ public class GameManager
         }
     }
 
+    private IInteractable? GetRandomInteractableItem() => interactableItemsFactory.CreateRandom();
+
     private void ClearInteractables()
     {
         if (!interactables.Any()) return; 
@@ -132,14 +146,10 @@ public class GameManager
             if (interactables.First().InteractionModel.Position.Y >= 650 
                 ||  interactables[i].IsTouchedByPlayer)
             {
-               // if (interactables[i] is Buster) BoostPlayerByBoosters((Buster)interactables[i]);
-
                 interactables.Remove(interactables.First());
             }
         }
     }
-
-    private void BoostPlayerByBoosters(Buster buster) => buster.UseBuster(player);
 
     private void FollowPlayer()
     {
@@ -166,26 +176,6 @@ public class GameManager
         {
             player.InteractionModel.Position.X = -20;
         }
-    }
-
-    private IInteractable GetRandomInteractableItem() => interactableItemsFactory.CreateRandom();
-
-    public void PlayerShoot()
-    {
-        player.Shoot();
-        foreach (var item in interactables)
-        {
-            if (item.InteractionModel.Position.Y > 0 && item is Monster)
-            {
-                interactables.Remove(item);
-                break;
-            }
-        }
-    }
-
-    public void KillMonster(Monster monster)
-    {
-        interactables.Remove(monster);
     }
 
     private int WriteFileMaxScore()
