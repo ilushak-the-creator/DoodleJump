@@ -16,7 +16,7 @@ public class InteractableItemsFactory
         busterFactory = new BusterFactory();
     }
 
-    public IInteractable CreateRandom()
+    public IInteractable? CreateRandom()
     {
         var probability = Random.Shared.Next(1, 100);
 
